@@ -11,17 +11,6 @@ pool:
 
 
 
-
-- task: FortifySCA@7
-  inputs:
-    licenseFile: 'C:\Program Files\Fortify\Fortify_SCA_23.1.1\fortify.license'
-    applicationType: 'dotnet'
-    fortifyProjects: '**\*.sln'
-    buildAnalyzerParams: 'msbuild'
-    fortifyBuildId: 'azuretest'
-    fortifyScanType: 'LocalScan'
-
-
 variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
