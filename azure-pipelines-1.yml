@@ -18,12 +18,26 @@ variables:
 
 steps:
 
-- task: CmdLine@2
+- task: PowerShell@2
   inputs:
+    targetType: 'inline'
     script: |
-      git clone https://github.com/akdoganburak/WebGoat.NET.git
+      # PowerShell script to download a GitHub repository and clean the current directory
       
-      Echo "Dosyalar indiriliyor"
+      # Specify the GitHub repository URL
+      $repoUrl = "https://github.com/akdoganburak/WebGoat.NET.git"
+      
+      
+      
+      # Clean current directory before downloading
+      Remove-Item -Path .\* -Force -Recurse
+
+      Write-Host "Dizin Temizleniyor"
+      
+      # Download the GitHub repository
+      git clone $repoUrl
+
+      Write-Host "Repo indiriliyor"
 - task: NuGetToolInstaller@1
 
 - checkout: none
