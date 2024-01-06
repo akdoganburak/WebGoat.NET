@@ -17,6 +17,13 @@ variables:
   buildConfiguration: 'Release'
 
 steps:
+
+- task: CmdLine@2
+  inputs:
+    script: |
+      git clone https://github.com/akdoganburak/WebGoat.NET.git
+      
+      Echo "Dosyalar indiriliyor"
 - task: NuGetToolInstaller@1
 
 - checkout: none
