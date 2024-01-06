@@ -65,5 +65,5 @@ steps:
     scaVerbose: true
     scaDebug: true
     fortifyScanType: 'LocalScan'
-
+    fortifyBuildId: 'webgoat test'
 
