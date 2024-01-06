@@ -58,13 +58,12 @@ steps:
   inputs:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
-
 - task: FortifySCA@7
   inputs:
     applicationType: 'dotnet'
     fortifyProjects: '**\*.sln'
-    buildAnalyzerParams: 'msbuild'
-    fortifyBuildId: 'azuretest'
+    scaVerbose: true
+    scaDebug: true
     fortifyScanType: 'LocalScan'
 
 
