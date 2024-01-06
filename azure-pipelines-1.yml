@@ -30,14 +30,15 @@ steps:
       
       
       # Clean current directory before downloading
+      Write-Host "Clean current directory before downloading"
       Remove-Item -Path .\* -Force -Recurse
 
-      Write-Host "Dizin Temizleniyor"
       
       # Download the GitHub repository
+      Write-Host "Download the GitHub repository"
       git clone $repoUrl
 
-      Write-Host "Repo indiriliyor"
+    
 - task: NuGetToolInstaller@1
 
 - checkout: none
