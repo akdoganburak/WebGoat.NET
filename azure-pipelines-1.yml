@@ -63,7 +63,6 @@ steps:
     applicationType: 'dotnet'
     fortifyProjects: '**\*.sln'
     fortifyBuildId: 'webgoat-test'
-    runFortifyRulepackUpdate: true
     scaVerbose: true
     scaDebug: true
     fortifyScanType: 'LocalScan'
