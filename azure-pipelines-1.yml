@@ -66,10 +66,10 @@ steps:
     scaVerbose: true
     scaDebug: true
     fortifyScanType: 'LocalScan'
-    additionalScanParams: 'msbuild'
     runFortifyUpload: true
     fortifyServerName: 'SSC'
     fortifyApplicationName: 'webgoat'
     fortifyApplicationVersion: 'net'
+    buildAnalyzerParams: 'msbuild /t:rebuild'
 
 
