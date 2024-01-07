@@ -70,6 +70,5 @@ steps:
     fortifyServerName: 'SSC'
     fortifyApplicationName: 'webgoat'
     fortifyApplicationVersion: 'net'
-    buildAnalyzerParams: 'msbuild /t:rebuild'
 
 
