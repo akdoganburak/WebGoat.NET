@@ -70,5 +70,6 @@ steps:
     fortifyServerName: 'SSC'
     fortifyApplicationName: 'webgoat'
     fortifyApplicationVersion: 'net'
+    fortifyBuildFailureCriteria: '[fortify priority order]:critical'
 
 
