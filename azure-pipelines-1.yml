@@ -60,7 +60,8 @@ steps:
 - task: FortifySCA@7
   inputs:
     applicationType: 'other'
-    buildAnalyzerParams: 'dotnet build WebGoat.NET.sln'
+    buildAnalyzerParams: 'dotnet build'
+    fortifySourceTranslate: '*.sln'
     fortifyBuildId: 'sso'
     fortifyScanType: 'LocalScan'
 
