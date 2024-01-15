@@ -55,19 +55,16 @@ steps:
   inputs:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+
+
 - task: FortifySCA@7
   inputs:
-    applicationType: 'dotnet'
-    fortifyProjects: '**\*.sln'
-    fortifyBuildId: 'webgoat-test'
-    scaVerbose: true
-    scaDebug: true
+    applicationType: 'other'
+    buildAnalyzerParams: 'dotnet build'
+    buildToolOptions: 'dotnet build'
+    fortifySourceTranslate: '**\*.sln'
+    fortifyBuildId: 'sso'
     fortifyScanType: 'LocalScan'
-    runFortifyUpload: true
-    fortifyServerName: 'SSC'
-    fortifyApplicationName: 'webgoat'
-    fortifyApplicationVersion: 'net'
-
 
 - task: PowerShell@2
   inputs:
