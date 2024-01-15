@@ -60,8 +60,7 @@ steps:
 - task: FortifySCA@7
   inputs:
     applicationType: 'other'
-    buildToolOptions: 'dotnet build'
-    fortifyProjects: '**\*.sln'
+    buildToolOptions: 'dotnet build **\*.sln'
     fortifyBuildId: 'sso'
     fortifyScanType: 'LocalScan'
 
