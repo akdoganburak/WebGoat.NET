@@ -61,7 +61,7 @@ steps:
   inputs:
     applicationType: 'other'
     buildToolOptions: 'dotnet build'
-    fortifySourceTranslate: 'WebGoat.NET.sln'
+    fortifySourceTranslate: '/WebGoat.NET.sln'
     fortifyBuildId: 'sso'
     fortifyScanType: 'LocalScan'
 
