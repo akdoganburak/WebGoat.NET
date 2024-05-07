@@ -9,8 +9,6 @@ trigger:
 pool:
   BurakWindows
 
-
-
 variables:
   solution: '**/*.sln'
   buildPlatform: 'Any CPU'
@@ -65,58 +63,3 @@ steps:
     fortifyBuildId: 'sso'
     fortifyScanType: 'LocalScan'
 
-
-- task: PowerShell@2
-  inputs:
-    targetType: 'inline'
-    script: |
-      # Define Fortify token , SSC URL and Version ID
-      $sscFortifyToken = "ZTE1YmFlMzgtY2ViOS00OTQ0LTljZmMtNzEyZmNkYWEwNzU4"
-      $sscUrl = "http://192.168.13.131:8181/ssc/api/v1"
-      $critical_count=100
-      
-      # Define headers for the HTTP requests
-      $headers = @{
-          'Accept' = 'application/json'
-          'Authorization' = "FortifyToken $sscFortifyToken"
-          'Content-Type' = 'application/json'
-      }
-      function Get-Projects($projectName){
-          $response = Invoke-RestMethod "$sscUrl/projects?start=0&limit=2000&fulltextsearch=false" -Method 'GET' -Headers $headers
-          $targetProject= $response.data | Where-Object {$_.name -eq $projectName}
-          if ($targetProject -ne $null) {
-              return $targetProject.id
-          } else {
-              Write-Output "Project with name '$projectName' not found."
-          }
-      }
-      
-      function Get-ProjectsVersion($id,$versionName) {
-          $url = "$sscUrl/projects/$id/versions?fields=id,name&start=0&limit=200&fulltextsearch=false&includeInactive=false&myAssignedIssues=false"
-          $response = Invoke-RestMethod -Uri $url -Method Get -Headers $headers
-          $targetVersion=$response.data | Where-Object {$_.name -eq $versionName}
-          if ($targetVersion -ne $null){
-              return $targetVersion.id
-          }
-          else{
-              Write-Output "Version with name '$versionName' not found"
-          }
-      }
-      
-      # Get Issue Count Function
-      function Get-Issues($id) {
-          $response = Invoke-RestMethod -Uri "$sscUrl/projectVersions/$id/issues?start=0&limit=1000&showhidden=false&showremoved=false&showsuppressed=false&showshortfilenames=false" -Method Get -Headers $headers
-          $friority=$response.data.friority
-          $friority_value="Critical"
-          $friority_count= ($friority | Select-String -Pattern $friority_value).Matches.Count
-          return $friority_count
-      }
-      
-      $projectName="webgoat"
-      $versionName="net"
-      $project_id=Get-Projects $projectName
-      $versionId=Get-ProjectsVersion $project_id $versionName
-      if ((Get-Issues $versionId) -gt $critical_count) {
-          Write-Host "Stopping the pipeline"
-          exit 1
-      }
