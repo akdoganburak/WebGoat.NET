@@ -59,7 +59,7 @@ steps:
   inputs:
     applicationType: 'dotnet'
     fortifyProjects: '**\*.sln'
-    buildAnalyzerParams: 'dotnet build'
     fortifyBuildId: 'sso'
+    runFortifyRulepackUpdate: true
     fortifyScanType: 'LocalScan'
 
