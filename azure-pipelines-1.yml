@@ -63,3 +63,141 @@ steps:
     runFortifyRulepackUpdate: true
     fortifyScanType: 'LocalScan'
 
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: |
+      # Define Fortify token , SSC URL and Version ID
+      $sscFortifyToken = "MWM3Mzc5YjUtZWE2ZC00N2JhLWI0MTktMmE3ODZkM2EwYzMy"
+      $sscUrl = "http://192.168.13.131:8181/ssc/api/v1"
+      
+      #Define SMPT Server
+      $smtpServer = "smtp.gmail.com"
+      $smtpPort = 587
+      $smtpUsername = "smtptest288@gmail.com"
+      $smtpPassword = ConvertTo-SecureString -String "wszu csdx godb xbox" -AsPlainText -Force
+      $smtpCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $smtpUsername, $smtpPassword
+      
+       # Define headers for the HTTP requests
+      $headers = @{
+          'Accept' = 'application/json'
+          'Authorization' = "FortifyToken $sscFortifyToken"
+          'Content-Type' = 'application/json'
+      }
+      
+      $emailbody= @"
+       <!DOCTYPE html>
+       <html>
+       <head>
+           <title>HTML Table Generator</title> 
+           <style>
+               table {
+                   width:100%;
+                   border:1px solid #b3adad;
+                   border-collapse:collapse;
+                   padding:5px;
+               }
+               table th {
+                   border:1px solid #b3adad;
+                   padding:5px;
+                   background: #e00000;
+                   color: #000000;
+               }
+               table td {
+                   border:1px solid #b3adad;
+                   text-align:center;
+                   padding:5px;
+                   background: #ffffff;
+                   color: #291e1e;
+               }
+           </style>
+       </head>
+       <body>
+       <b> $projectName - $versionName Overview </b> 
+           <table>
+               <thead>
+                   <tr>
+                       <th>Critical</th>
+                       <th>High</th>
+                       <th>Medium</th>
+                       <th>Low</th>
+                   </tr>
+               </thead>
+               <tbody>
+                   <tr>
+                       <td>Critical_PlaceHolder</td>
+                       <td>High_PlaceHolder</td>
+                       <td>Medium_PlaceHolder</td>
+                       <td>Low_PlaceHolder</td>
+                   </tr>
+               </tbody>
+           </table>
+       </body>
+       </html>
+       
+      "@
+      
+      function Get-Projects($projectName){
+          $response = Invoke-RestMethod "$sscUrl/projects?start=0&limit=2000&fulltextsearch=false" -Method 'GET' -Headers $headers
+          $targetProject= $response.data | Where-Object {$_.name -eq $projectName}
+          if ($targetProject -ne $null) {
+              return $targetProject.id
+          } else {
+              Write-Output "Project with name '$projectName' not found."
+          }
+      }
+       
+      function Get-ProjectsVersion($id,$versionName) {
+          $url = "$sscUrl/projects/$id/versions?fields=id,name&start=0&limit=200&fulltextsearch=false&includeInactive=false&myAssignedIssues=false"
+          $response = Invoke-RestMethod -Uri $url -Method Get -Headers $headers
+          $targetVersion=$response.data | Where-Object {$_.name -eq $versionName}
+          if ($targetVersion -ne $null){
+              return $targetVersion.id
+          }
+          else{
+              Write-Output "Version with name '$versionName' not found"
+          }
+      }
+       
+       # Get Issue Count Function
+      function Get-Issues($id) {
+          $response = Invoke-RestMethod -Uri "$sscUrl/projectVersions/$id/issues?start=0&limit=1000&showhidden=false&showremoved=false&showsuppressed=false&showshortfilenames=false" -Method Get -Headers $headers
+          $friority=$response.data.friority
+      
+          $critical_count= ($friority | Select-String -Pattern "Critical").Matches.Count
+          $high_count= ($friority | Select-String -Pattern "High").Matches.Count
+          $medium_count= ($friority | Select-String -Pattern "Medium").Matches.Count
+          $low_count= ($friority | Select-String -Pattern "Low").Matches.Count
+      
+          return $critical_count,$high_count,$medium_count,$low_count
+      }
+      
+      function Send-Email($critical,$high,$medium,$low){
+          $emailbody= $emailbody.Replace("Critical_PlaceHolder",$critical)
+          $emailbody= $emailbody.Replace("High_PlaceHolder",$high)
+          $emailbody= $emailbody.Replace("Medium_PlaceHolder",$medium)
+          $emailbody= $emailbody.Replace("Low_PlaceHolder",$low)
+          Send-MailMessage -To "burak.akdogan@gmail.com" -From "smtptest288@gmail.com" -Subject "$projectName -  $versionName Overview" -Body $emailbody  -BodyAsHtml --Attachments $reportPath -SmtpServer $smtpServer -Port $smtpPort -UseSSL -Credential $smtpCredential 
+      
+      
+      }
+      
+      function Get-Report($reportTemplate,$FPRPath,$reportPath)
+      {
+          try{
+              BIRTReportGenerator -template $reportTemplate -source $FPRPath -format pdf  --UseFortifyPriorityOrder -output $reportPath
+          }
+          catch{
+              Write-Host $_
+          }
+      }
+      $FPRPath="C:\azureagent\_work\2\a\sca_artifacts\sso.fpr"
+      $reportTemplate = "Developer Workbook"
+      $reportPath="C:\azureagent\_work\2\a\sca_artifacts\result.fpr"
+      $projectName="webgoat"
+      $versionName="ved"
+      $project_id=Get-Projects $projectName
+      $versionId=Get-ProjectsVersion $project_id $versionName
+      Get-Report $reportTemplate $FPRPath $reportPath
+      $critical_count,$high_count,$medium_count,$low_count = Get-Issues $versionId
+      Send-Email $critical_count $high_count $medium_count  $low_count
