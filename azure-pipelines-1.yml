@@ -59,7 +59,7 @@ steps:
   inputs:
     applicationType: 'other'
     buildAnalyzerParams: 'dotnet build'
-    fortifySourceTranslate: '*/*.sln'
+    fortifySourceTranslate: '**\*.sln'
     fortifyBuildId: 'sso'
     fortifyScanType: 'LocalScan'
 
