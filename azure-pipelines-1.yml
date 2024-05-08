@@ -183,9 +183,14 @@ steps:
       }
       
       function Get-Report($reportTemplate,$FPRPath,$reportPath)
-      {
+      {   $reportTemplate
+          $FPRPath
+          $reportPath
+          $command='BIRTReportGenerator -template "$reportTemplate" -source "$FPRPath" -format pdf  --UseFortifyPriorityOrder -output "$reportPath"'
           try{
-              BIRTReportGenerator -template $reportTemplate -source $FPRPath -format pdf  --UseFortifyPriorityOrder -output $reportPath
+              Write-Host $command
+              Invoke-Expression $command
+      
           }
           catch{
               Write-Host $_
@@ -193,7 +198,7 @@ steps:
       }
       $FPRPath="C:\azureagent\_work\2\a\sca_artifacts\sso.fpr"
       $reportTemplate = "Developer Workbook"
-      $reportPath="C:\azureagent\_work\2\a\sca_artifacts\result.fpr"
+      $reportPath="C:\azureagent\_work\2\a\sca_artifacts\result.pdf"
       $projectName="webgoat"
       $versionName="ved"
       $project_id=Get-Projects $projectName
