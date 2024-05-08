@@ -177,7 +177,7 @@ steps:
           $emailbody= $emailbody.Replace("High_PlaceHolder",$high)
           $emailbody= $emailbody.Replace("Medium_PlaceHolder",$medium)
           $emailbody= $emailbody.Replace("Low_PlaceHolder",$low)
-          Send-MailMessage -To "burak.akdogan@gmail.com" -From "smtptest288@gmail.com" -Subject "$projectName -  $versionName Overview" -Body $emailbody  -BodyAsHtml --Attachments $reportPath -SmtpServer $smtpServer -Port $smtpPort -UseSSL -Credential $smtpCredential 
+          Send-MailMessage -To "burak.akdogan@gmail.com" -From "smtptest288@gmail.com" -Subject "$projectName -  $versionName Overview" -Body $emailbody  -BodyAsHtml --Attachments "$reportPath" -SmtpServer $smtpServer -Port $smtpPort -UseSSL -Credential $smtpCredential 
       
       
       }
